@@ -1,7 +1,7 @@
 
 # Firebase4SharpHelper
 
-Firebase for .net framework helper library
+this project makes for easily attaching to firebase realtime database.
 
 ## License
 
