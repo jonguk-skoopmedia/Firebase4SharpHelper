@@ -1,9 +1,0 @@
-C:\Sources\Firbase4CsharpHelper\Firebase4CsharpHelper\obj\Debug\netcoreapp2.0\Firebase4CsharpHelper.csprojResolveAssemblyReference.cache
-C:\Sources\Firbase4CsharpHelper\Firebase4CsharpHelper\obj\Debug\netcoreapp2.0\Firebase4CsharpHelper.csproj.CoreCompileInputs.cache
-C:\Sources\Firbase4CsharpHelper\Firebase4CsharpHelper\obj\Debug\netcoreapp2.0\Firebase4CsharpHelper.AssemblyInfoInputs.cache
-C:\Sources\Firbase4CsharpHelper\Firebase4CsharpHelper\obj\Debug\netcoreapp2.0\Firebase4CsharpHelper.AssemblyInfo.cs
-C:\Sources\Firbase4CsharpHelper\Firebase4CsharpHelper\bin\Debug\netcoreapp2.0\Firebase4CsharpHelper.deps.json
-C:\Sources\Firbase4CsharpHelper\Firebase4CsharpHelper\bin\Debug\netcoreapp2.0\Firebase4CsharpHelper.dll
-C:\Sources\Firbase4CsharpHelper\Firebase4CsharpHelper\bin\Debug\netcoreapp2.0\Firebase4CsharpHelper.pdb
-C:\Sources\Firbase4CsharpHelper\Firebase4CsharpHelper\obj\Debug\netcoreapp2.0\Firebase4CsharpHelper.dll
-C:\Sources\Firbase4CsharpHelper\Firebase4CsharpHelper\obj\Debug\netcoreapp2.0\Firebase4CsharpHelper.pdb
