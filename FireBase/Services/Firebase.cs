@@ -1,6 +1,7 @@
-﻿using lvChartTest.Util.FireBase.Enums;
-using lvChartTest.Util.FireBase.Error;
-using lvChartTest.Util.FireBase.Model;
+﻿
+using FirebaseSharp.FireBase.Enums;
+using FirebaseSharp.FireBase.Error;
+using FirebaseSharp.FireBase.Model;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -8,14 +9,14 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace lvChartTest.Util.FireBase.Services
+namespace FirebaseSharp.FireBase
 {
-    public static class Firebase
+    public class Firebase
     {
         public static readonly string FIREBASE_API_JSON_EXTENSION = ".json";
 
-        private static string mBaseUrl;
-        public static string BaseUrl
+        private string mBaseUrl;
+        public string BaseUrl
         {
             get
             {
@@ -24,7 +25,7 @@ namespace lvChartTest.Util.FireBase.Services
 
             set
             {
-                if (string.IsNullOrEmpty(mBaseUrl.Trim()))
+                if (string.IsNullOrEmpty(value))
                 {
 
                     string msg = "baseUrl cannot be null or empty; was: '" + mBaseUrl + "'";
@@ -37,8 +38,8 @@ namespace lvChartTest.Util.FireBase.Services
             }
         }
 
-        private static string mSecureToken = null;
-        public static string SecureToken
+        private string mSecureToken = null;
+        public string SecureToken
         {
             get
             {
@@ -50,7 +51,7 @@ namespace lvChartTest.Util.FireBase.Services
             }
         }
 
-        public static async Task<FirebaseResponse> Get()
+        public async Task<FirebaseResponse> Get()
         {
             return await Get();
         }
@@ -66,7 +67,7 @@ namespace lvChartTest.Util.FireBase.Services
         /// </summary>
         /// <param name="path"></param>
         /// <returns></returns>
-        public static async Task<FirebaseResponse> Get(string path = null, Dictionary<string, string> query = null)
+        public async Task<FirebaseResponse> Get(string path = null, Dictionary<string, string> query = null)
         {
             string url = BuildFullUrlFromRelativePath(path, query);
 
@@ -89,12 +90,12 @@ namespace lvChartTest.Util.FireBase.Services
             }
         }
 
-        public static async Task<FirebaseResponse> patch(Dictionary<string, object> data)
+        public async Task<FirebaseResponse> patch(Dictionary<string, object> data)
         {
             return await Patch(null, data);
         }
 
-        public static async Task<FirebaseResponse> Patch(string path, Dictionary<string, object> data, Dictionary<string, string> query = null)
+        public async Task<FirebaseResponse> Patch(string path, Dictionary<string, object> data, Dictionary<string, string> query = null)
         {
             string url = BuildFullUrlFromRelativePath(path, query);
 
@@ -117,7 +118,7 @@ namespace lvChartTest.Util.FireBase.Services
             }
         }
 
-        public static async Task<FirebaseResponse> Patch(string path, string jsonData, Dictionary<string, string> query = null)
+        public async Task<FirebaseResponse> Patch(string path, string jsonData, Dictionary<string, string> query = null)
         {
             string url = BuildFullUrlFromRelativePath(path, query);
 
@@ -140,7 +141,7 @@ namespace lvChartTest.Util.FireBase.Services
             }
         }
 
-        public static async Task<FirebaseResponse> Put(string path, Dictionary<string, object> data)
+        public async Task<FirebaseResponse> Put(string path, Dictionary<string, object> data)
         {
             string url = BuildFullUrlFromRelativePath(path);
 
@@ -163,7 +164,7 @@ namespace lvChartTest.Util.FireBase.Services
             }
         }
 
-        public static async Task<FirebaseResponse> Put(string path, string jsonData)
+        public async Task<FirebaseResponse> Put(string path, string jsonData)
         {
             string url = BuildFullUrlFromRelativePath(path);
 
@@ -186,7 +187,7 @@ namespace lvChartTest.Util.FireBase.Services
             }
         }
 
-        public static async Task<FirebaseResponse> Post(string path, Dictionary<string, object> data)
+        public async Task<FirebaseResponse> Post(string path, Dictionary<string, object> data)
         {
             string url = BuildFullUrlFromRelativePath(path);
 
@@ -209,7 +210,7 @@ namespace lvChartTest.Util.FireBase.Services
             }
         }
 
-        public static async Task<FirebaseResponse> Post(string path, string jsonData)
+        public async Task<FirebaseResponse> Post(string path, string jsonData)
         {
             string url = BuildFullUrlFromRelativePath(path);
 
@@ -232,7 +233,7 @@ namespace lvChartTest.Util.FireBase.Services
             }
         }
 
-        public static async Task<FirebaseResponse> Delete(string path)
+        public async Task<FirebaseResponse> Delete(string path)
         {
             string url = BuildFullUrlFromRelativePath(path);
 
@@ -254,9 +255,20 @@ namespace lvChartTest.Util.FireBase.Services
             }
         }
 
+        public async Task<FirebaseDbListener<T>> ListeningAsync<T>(string path, Dictionary<string, string> query = null)
+        {
+            Uri uri = new Uri(BuildFullUrlFromRelativePath(path, query));
+
+            HttpWebRequest webRequest = HttpWebRequest.CreateHttp(uri);
+
+            webRequest.Accept = "text/event-stream";
+            
+            return new FirebaseDbListener<T>(webRequest);
+        }
+
 
         #region private methods
-        private static string BuildFullUrlFromRelativePath(string path, IEnumerable<KeyValuePair<string, string>> qeury = null)
+        private string BuildFullUrlFromRelativePath(string path, IEnumerable<KeyValuePair<string, string>> qeury = null)
         {
             // massage the path (whether it's null, empty, or not) into a full URL
             if (path == null)
@@ -294,7 +306,7 @@ namespace lvChartTest.Util.FireBase.Services
                     try
                     {
                         e = enumerator.Current;
-                        url += e.Key + "=" + System.Web.HttpUtility.UrlEncode(e.Value, Encoding.UTF8) + "&";
+                        url += e.Key + "=" + e.Value + "&";
                     }
                     catch (Exception exception)
                     {
@@ -456,7 +468,7 @@ namespace lvChartTest.Util.FireBase.Services
                     StringBuilder builder = new StringBuilder(maxCapacity);
                     using (StreamReader streamReader = new StreamReader(httpResponse.GetResponseStream()))
                     {
-                        builder.Append(System.Web.HttpUtility.UrlEncode((await streamReader.ReadToEndAsync()), Encoding.UTF8));
+                        builder.Append(await streamReader.ReadToEndAsync());
                     }
 
 

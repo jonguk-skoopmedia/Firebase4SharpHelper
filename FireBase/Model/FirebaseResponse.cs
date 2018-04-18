@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Text;
 
-namespace lvChartTest.Util.FireBase.Model
+namespace FirebaseSharp.FireBase.Model
 {
     public class FirebaseResponse
     {

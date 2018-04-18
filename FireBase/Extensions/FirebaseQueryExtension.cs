@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace lvChartTest.Util.FireBase.Extensions
+namespace FirebaseSharp.FireBase.Extensions
 {
     public static class FirebaseQueryExtension
     {

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace lvChartTest.Util.FireBase.Error
+namespace FirebaseSharp.FireBase.Error
 {
     public class JacksonUtilityException : Exception
     {
