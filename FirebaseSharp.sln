@@ -5,6 +5,8 @@ VisualStudioVersion = 15.0.27130.2020
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FirebaseSharp", "FirebaseSharp.csproj", "{6AFBD02E-7C83-41B5-BD1A-FE04A86416CD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Demo", "..\Demo\Demo.csproj", "{9A0CF06D-7074-4274-BE27-00BB8E36299C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{6AFBD02E-7C83-41B5-BD1A-FE04A86416CD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6AFBD02E-7C83-41B5-BD1A-FE04A86416CD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6AFBD02E-7C83-41B5-BD1A-FE04A86416CD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9A0CF06D-7074-4274-BE27-00BB8E36299C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9A0CF06D-7074-4274-BE27-00BB8E36299C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9A0CF06D-7074-4274-BE27-00BB8E36299C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9A0CF06D-7074-4274-BE27-00BB8E36299C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -8,18 +8,33 @@ namespace FirebaseSharp
         public static void Main(string[] args)
         {
             var firebase = new Firebase();
-            firebase.BaseUrl = "https://bitsonic-eb3f6.firebaseio.com";
+            firebase.BaseUrl = "";
+            firebase.SecureToken = null;
 
-            using (firebase.ListeningAsync<object>("/trade_histories/qtum-krw"))
+            using (var listener = firebase.ListeningAsync<object>("/trade_histories/qtum-krw"))
             {
-                string value = string.Empty;
 
-                do
+                listener.Wait();
+                using (var f = listener.GetAwaiter().GetResult())
                 {
-                    value = Console.ReadLine();
+                    string value = string.Empty;
+
+                    do
+                    {
+                        value = Console.ReadLine();
+                    }
+                    while (!value.Equals("Done"));
                 }
-                while (!value.Equals("Done"));
             }
+
+            Console.WriteLine("Done");
+
+            string values = string.Empty;
+            do
+            {
+                values = Console.ReadLine();
+            }
+            while (!values.Equals("Done"));
         }
     }
 }

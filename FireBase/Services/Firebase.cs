@@ -90,7 +90,7 @@ namespace FirebaseSharp.FireBase
             }
         }
 
-        public async Task<FirebaseResponse> patch(Dictionary<string, object> data)
+        public async Task<FirebaseResponse> Patch(Dictionary<string, object> data)
         {
             return await Patch(null, data);
         }
