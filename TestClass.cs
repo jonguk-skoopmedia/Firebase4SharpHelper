@@ -11,7 +11,7 @@ namespace FirebaseSharp
             firebase.BaseUrl = "";
             firebase.SecureToken = null;
 
-            using (var listener = firebase.ListeningAsync<object>("/trade_histories/qtum-krw"))
+            using (var listener = firebase.ListeningAsync("/trade_histories/qtum-krw"))
             {
 
                 listener.Wait();

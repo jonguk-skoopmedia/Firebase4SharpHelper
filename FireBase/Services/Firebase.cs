@@ -255,7 +255,9 @@ namespace FirebaseSharp.FireBase
             }
         }
 
-        public async Task<FirebaseDbListener<T>> ListeningAsync<T>(string path, Dictionary<string, string> query = null)
+#pragma warning disable CS1998 // 이 비동기 메서드에는 'await' 연산자가 없으며 메서드가 동시에 실행됩니다.
+        public async Task<FirebaseDbListener> ListeningAsync(string path, Dictionary<string, string> query = null)
+#pragma warning restore CS1998
         {
             Uri uri = new Uri(BuildFullUrlFromRelativePath(path, query));
 
@@ -263,7 +265,7 @@ namespace FirebaseSharp.FireBase
 
             webRequest.Accept = "text/event-stream";
             
-            return new FirebaseDbListener<T>(webRequest);
+            return new FirebaseDbListener(webRequest);
         }
 
 
@@ -450,6 +452,10 @@ namespace FirebaseSharp.FireBase
             }
 
             // get the response-body
+            if (!success)
+            {
+                goto Failed;
+            }
 
             if (httpResponse.ContentLength > 0)
             {
@@ -471,9 +477,8 @@ namespace FirebaseSharp.FireBase
                         builder.Append(await streamReader.ReadToEndAsync());
                     }
 
-
                     Dictionary<string, object> body = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, object>>(builder.ToString());
-                    // response = new FirebaseResponse(success, code, body, builder.ToString());
+                    response = new FirebaseResponse(success, (int)httpResponse.StatusCode, body, builder.ToString());
 
                     builder.Clear();
 
@@ -482,7 +487,6 @@ namespace FirebaseSharp.FireBase
                 catch (IOException ioException)
                 {
                     // LOGGER.error(msg);
-
                     throw new FirebaseException(ioException.Message, ioException);
                 }
                 catch (Newtonsoft.Json.JsonReaderException jsonParseException)
@@ -491,8 +495,8 @@ namespace FirebaseSharp.FireBase
                 }
             }
 
-
-            return null;
+            Failed:
+            return new FirebaseResponse(success, (int)httpResponse.StatusCode, null, null);
         }
         #endregion
 

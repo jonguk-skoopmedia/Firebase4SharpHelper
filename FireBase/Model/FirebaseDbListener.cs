@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace FirebaseSharp.FireBase.Model
 {
-    public class FirebaseDbListener<T> : IDisposable
+    public class FirebaseDbListener : IDisposable
     {
         private HttpWebRequest mRequest;
         private bool mRunListening = false;
@@ -76,11 +76,11 @@ namespace FirebaseSharp.FireBase.Model
                             {
                                 // Console.WriteLine(value);
                                 string subString = value.Substring(6);
-                                var responseValue = JsonConvert.DeserializeObject<ResponseData<T>>(subString);
-                                ListeningResponse<T> result = new ListeningResponse<T>
+                                
+                                ListeningResponse result = new ListeningResponse
                                 {
                                     Type = type,
-                                    Data = responseValue
+                                    Data = subString
                                 };
 
                                 switch (result.Type)
@@ -111,6 +111,7 @@ namespace FirebaseSharp.FireBase.Model
             catch (Exception exception)
             {
                 // TODO: loging
+                Console.WriteLine(exception);
             }
             finally
             {
@@ -123,6 +124,8 @@ namespace FirebaseSharp.FireBase.Model
                 {
                     response.Close();
                 }
+
+                GC.Collect();
             }
         }
 
@@ -139,18 +142,37 @@ namespace FirebaseSharp.FireBase.Model
             }
         }
 
-        public event EventHandler<ListeningResponse<T>> DataAdded;
-        public event EventHandler<ListeningResponse<T>> DataChanged;
+#pragma warning disable CS0067 // Event can be possible to not using.
+        public event EventHandler<ListeningResponse> DataAdded;
+        public event EventHandler<ListeningResponse> DataChanged;
         public event EventHandler DataRemoved;
+#pragma warning disable CS0067
 
-        private void OnAdded(ListeningResponse<T> value)
+        private void OnAdded(ListeningResponse value)
         {
-            DataAdded?.BeginInvoke(this, value, null, null);
+            try
+            {
+                DataAdded?.Invoke(this, value);
+            }
+            catch (Exception e)
+            {
+                // TODO: logging
+                Console.WriteLine(e);
+            }
+            
         }
 
-        private void OnChanged(ListeningResponse<T> value)
+        private void OnChanged(ListeningResponse value)
         {
-            DataChanged?.BeginInvoke(this, value, null, null);
+            try
+            {
+                DataChanged?.Invoke(this, value);
+            }
+            catch(Exception e)
+            {
+                // TODO: Logging
+                Console.WriteLine(e);
+            }
         }
     }
 }
