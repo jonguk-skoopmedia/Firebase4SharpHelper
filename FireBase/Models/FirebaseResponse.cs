@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Text;
 
-namespace FirebaseSharp.FireBase.Model
+namespace FirebaseSharp.Firebase.Model
 {
     public class FirebaseResponse
     {

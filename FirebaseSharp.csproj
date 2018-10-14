@@ -20,6 +20,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -45,6 +46,9 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="EdgeJs, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\Bitsonic_Hts\packages\Edge.js.8.2.1\lib\net40\EdgeJs.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\Bitsonic_Hts\packages\Newtonsoft.Json.11.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
@@ -58,22 +62,42 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="FireBase\Extensions\WithCancellationExtension.cs" />
-    <Compile Include="FireBase\Model\ListeningResponse.cs" />
-    <Compile Include="FireBase\Enums\EFirebaseRestMethod.cs" />
-    <Compile Include="FireBase\Error\FirebaseException.cs" />
-    <Compile Include="FireBase\Error\JacksonUtilityException.cs" />
-    <Compile Include="FireBase\Extensions\FirebaseQueryExtension.cs" />
-    <Compile Include="FireBase\Model\FirebaseDbListener.cs" />
-    <Compile Include="FireBase\Model\FirebaseResponse.cs" />
-    <Compile Include="FireBase\Services\Firebase.cs" />
+    <Compile Include="Firebase\FirebaseHelper.cs" />
+    <Compile Include="Firebase\Models\FirebaseResponse.cs" />
+    <Compile Include="Firebase\Models\ObserveEventArgs.cs" />
+    <Compile Include="Firebase\Models\RealtimeDBConfigure.cs" />
+    <Compile Include="ModuleProvider\ModuleConfigure.cs" />
+    <Compile Include="ModuleProvider\ModuleLoader.cs" />
+    <Compile Include="ModuleProvider\ProviderConfigure.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Utils\SecurePasswordExtension.cs" />
   </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
-    <Folder Include="System\Web\" />
-  </ItemGroup>
-  <ItemGroup>
+    <None Include="edge\x64\edge_nativeclr.node">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="edge\x86\edge_nativeclr.node">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="edge\double_edge.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="edge\edge.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="edge\x64\node.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="edge\x86\node.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Firebase\firebase_proxy_module.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
