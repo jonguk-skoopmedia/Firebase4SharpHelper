@@ -29,12 +29,14 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup>
     <StartupObject />
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'TestBuild|AnyCPU'">
     <OutputPath>bin\TestBuild\</OutputPath>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'PERPORMANCE_TEST|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
@@ -44,6 +46,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="EdgeJs, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
@@ -65,6 +68,7 @@
     <Compile Include="Firebase\FirebaseHelper.cs" />
     <Compile Include="Firebase\Models\FirebaseResponse.cs" />
     <Compile Include="Firebase\Models\ObserveEventArgs.cs" />
+    <Compile Include="Firebase\Models\ObserveProxy.cs" />
     <Compile Include="Firebase\Models\RealtimeDBConfigure.cs" />
     <Compile Include="ModuleProvider\ModuleConfigure.cs" />
     <Compile Include="ModuleProvider\ModuleLoader.cs" />

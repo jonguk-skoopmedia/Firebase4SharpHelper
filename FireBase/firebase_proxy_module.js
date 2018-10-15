@@ -63,6 +63,8 @@ module.exports.firebaseProvider.auth = function (token, callback) {
                 console.log(error);
                 callback(null, error);
             });
+
+            callback(null, true);
         }
         else {
             callback(null, true);
@@ -104,35 +106,45 @@ module.exports.firebaseProvider.observe = function (path, callback) {
     try {
         module.exports.firebaseProvider.listeners[path] = module.exports.firebaseProvider.database.ref(path);
         module.exports.firebaseProvider.listeners[path].on('value', function (snapshot) {
-            var paths = snapshot.ref.path.pieces_;
-            var maxLength = paths.length;
+            try {
+                var paths = snapshot.ref.path.pieces_;
+                var maxLength = paths.length;
 
-            var relativePath = "";
+                var relativePath = "";
 
-            for (var index = 0; index < maxLength; index++) {
-                relativePath += paths[index];
+                for (var index = 0; index < maxLength; index++) {
+                    relativePath += paths[index];
 
-                if (index < maxLength - 1) {
-                    relativePath += '/';
+                    if (index < maxLength - 1) {
+                        relativePath += '/';
+                    }
                 }
+
+                var result = {
+                    path: relativePath,
+                    value: JSON.stringify(snapshot.val())
+                };
+
+                console.log(snapshot.val());
+
+                module.exports.firebaseProvider.invoker(result, function (error, result) {
+                });
+
             }
-
-            var result = {
-                path: relativePath,
-                value: JSON.stringify(snapshot.val())
-            };
-
-            module.exports.firebaseProvider.invoker(result, function (error, result) {
-            });
+            catch (exception) {
+                console.log("Failed to firebase response parse: \n" + snapshot.val() + "\n path: " + paths);
+            }
         });
 
+        console.log("Observe Succedded");
         console.log(module.exports.firebaseProvider.listeners);
 
     } catch (exception) {
+        console.log("observe exception: " + exception);
         callback(exception, false);
     }
 
-    callback(null, false);
+    callback(null, true);
 };
 
 module.exports.firebaseProvider.stopObserve = function (path, callback) {

@@ -1,6 +1,5 @@
-﻿using EdgeJs;
-using FirebaseSharp.Firebase.Model;
-using FirebaseSharp.Firebase.Models;
+﻿using FirebaseSharp.Firebase.Models;
+using FirebaseSharp.FireBase.Models;
 using FirebaseSharp.ModuleProvider;
 using FirebaseSharp.Util;
 using Newtonsoft.Json;
