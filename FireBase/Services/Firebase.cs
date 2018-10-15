@@ -321,11 +321,11 @@ namespace FirebaseSharp.FireBase
             {
                 if (qeury != null)
                 {
-                    url += "auth=" + mSecureToken;
+                    url += "access_token=" + mSecureToken;
                 }
                 else
                 {
-                    url += "?auth=" + mSecureToken;
+                    url += "?access_token=" + mSecureToken;
                 }
 
             }

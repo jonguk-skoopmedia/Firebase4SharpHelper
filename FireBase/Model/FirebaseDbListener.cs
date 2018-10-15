@@ -13,7 +13,6 @@ namespace FirebaseSharp.FireBase.Model
     {
         private HttpWebRequest mRequest;
         private bool mRunListening = false;
-        private readonly object locker = new object();
 
         private CancellationTokenSource cancellation = new CancellationTokenSource();
         private Task Listener = null;
@@ -21,7 +20,7 @@ namespace FirebaseSharp.FireBase.Model
         public FirebaseDbListener(HttpWebRequest request)
         {
             mRequest = request;
-
+            mRequest.Timeout = 300000;
             mRunListening = true;
 #pragma warning disable CS4014 // 이 호출을 대기하지 않으므로 호출이 완료되기 전에 현재 메서드가 계속 실행됩니다.
             Listener = Task.Run(() => EventListenerAsync(request), cancellation.Token);
@@ -40,16 +39,8 @@ namespace FirebaseSharp.FireBase.Model
 
                 EFirebaseRestMethod type = EFirebaseRestMethod.NONE;
 
-                while (true)
+                while (mRunListening)
                 {
-                    lock (locker)
-                    {
-                        if (!mRunListening)
-                        {
-                            break;
-                        }
-                    }
-
                     string value = await stream.ReadLineAsync().WithCancellation(cancellation.Token);
 
                     if (value != "")
@@ -76,7 +67,7 @@ namespace FirebaseSharp.FireBase.Model
                             {
                                 // Console.WriteLine(value);
                                 string subString = value.Substring(6);
-                                
+
                                 ListeningResponse result = new ListeningResponse
                                 {
                                     Type = type,
@@ -115,12 +106,12 @@ namespace FirebaseSharp.FireBase.Model
             }
             finally
             {
-                if(stream != null)
+                if (stream != null)
                 {
                     stream.Close();
                 }
 
-                if(response != null)
+                if (response != null)
                 {
                     response.Close();
                 }
@@ -131,15 +122,12 @@ namespace FirebaseSharp.FireBase.Model
 
         public void Dispose()
         {
-            lock (locker)
+            if (mRunListening == true)
             {
-                if (mRunListening == true)
-                {
-                    mRunListening = false;
-                }
-
-                cancellation.Cancel();
+                mRunListening = false;
             }
+
+            cancellation.Cancel();
         }
 
 #pragma warning disable CS0067 // Event can be possible to not using.
@@ -159,7 +147,7 @@ namespace FirebaseSharp.FireBase.Model
                 // TODO: logging
                 Console.WriteLine(e);
             }
-            
+
         }
 
         private void OnChanged(ListeningResponse value)
@@ -168,7 +156,7 @@ namespace FirebaseSharp.FireBase.Model
             {
                 DataChanged?.Invoke(this, value);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 // TODO: Logging
                 Console.WriteLine(e);

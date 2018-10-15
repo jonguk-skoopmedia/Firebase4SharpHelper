@@ -48,6 +48,7 @@
   <ItemGroup>
     <Compile Include="FireBase\Extensions\WithCancellationExtension.cs" />
     <Compile Include="FireBase\Model\ListeningResponse.cs" />
+    <Compile Include="FireBase\ObserveProxy.cs" />
     <Compile Include="TestClass.cs" />
     <Compile Include="FireBase\Enums\EFirebaseRestMethod.cs" />
     <Compile Include="FireBase\Error\FirebaseException.cs" />
