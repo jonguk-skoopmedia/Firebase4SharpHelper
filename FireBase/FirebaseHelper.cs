@@ -1,5 +1,4 @@
 ﻿using FirebaseSharp.Firebase.Models;
-using FirebaseSharp.FireBase.Models;
 using FirebaseSharp.ModuleProvider;
 using FirebaseSharp.Util;
 using Newtonsoft.Json;
@@ -22,6 +21,14 @@ namespace FirebaseSharp.Firebase
 
         public static async Task<bool> InitFirebaseAsync(ReatimeDBConfigure configure)
         {
+            await ModuleLoader.LoadModules(new ModuleConfigure[] {
+                 new ModuleConfigure
+                {
+                    ModuleName="firebase",
+                    ModulePath=$"{Directory.GetCurrentDirectory().Replace('\\','/')}/Firebase/firebase_proxy_module"
+                },
+            });
+
             mFirebaseWapper = ModuleProvider.ModuleLoader.GetProvider("firebase").firebaseProvider;
 
             var firebaseIntializer = (Func<object, Task<object>>)mFirebaseWapper.init;
@@ -35,7 +42,7 @@ namespace FirebaseSharp.Firebase
                 {
                     ProviderPath = $"{Directory.GetCurrentDirectory().Replace('\\', '/')}/edge/edge",
                     AssemblyPath = $"{Directory.GetCurrentDirectory().Replace('\\', '/')}/FirebaseSharp.dll",
-                    TargetName = "FirebaseSharp.FireBase.ObserveProxy",
+                    TargetName = "FirebaseSharp.Firebase.Models.ObserveProxy",
                     TargetMethod = nameof(ObserveProxy.InvokeFromFirebase),
                 };
 

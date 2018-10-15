@@ -8,7 +8,7 @@ namespace FirebaseSharp.ModuleProvider
     {
         private static Dictionary<string, dynamic> mProvider;
 
-        public static async Task InitializeNodeJsProviderAsync(List<ModuleConfigure> moduleConfigures)
+        public static async Task LoadModules(IEnumerable<ModuleConfigure> moduleConfigures)
         {
             var func = Edge.Func(@"return function (targetModels, callback) {
                                             var modules = {};

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-namespace FirebaseSharp.FireBase.Models
+namespace FirebaseSharp.Firebase.Models
 {
     public class InvokeEventArgs : EventArgs
     {
