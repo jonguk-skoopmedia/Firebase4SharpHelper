@@ -59,12 +59,14 @@ module.exports.firebaseProvider.auth = function (token, callback) {
         var user = module.exports.firebaseProvider.firebase.auth().currentUser;
 
         if (user === null) {
-            module.exports.firebaseProvider.firebase.auth().signInWithCustomToken(token).catch(function (error) {
-                console.log(error);
-                callback(null, error);
-            });
-
-            callback(null, true);
+            module.exports.firebaseProvider.firebase.auth().signInWithCustomToken(token)
+                .then(() => {
+                    callback(null, true);
+                })
+                .catch(function (error) {
+                    console.log(error);
+                    callback(null, error);
+                });
         }
         else {
             callback(null, true);
@@ -124,8 +126,6 @@ module.exports.firebaseProvider.observe = function (path, callback) {
                     path: relativePath,
                     value: JSON.stringify(snapshot.val())
                 };
-
-                console.log(snapshot.val());
 
                 module.exports.firebaseProvider.invoker(result, function (error, result) {
                 });
