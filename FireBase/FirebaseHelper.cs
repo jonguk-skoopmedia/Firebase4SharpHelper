@@ -13,6 +13,14 @@ namespace FirebaseSharp.Firebase
 {
     public static class FirebaseHelper
     {
+        private class FirebaseInitConfigure
+        {
+            public string AppSdk { get; set; }
+            public string DbSdk { get; set; }
+            public string AuthSdk { get; set; }
+            public ReatimeDBConfigure DbConfigure { get; set; }
+        }
+
         public static string Configure { get; set; }
         private static dynamic mFirebaseWapper;
 
@@ -21,11 +29,26 @@ namespace FirebaseSharp.Firebase
 
         public static async Task<bool> InitFirebaseAsync(ReatimeDBConfigure configure)
         {
+            string result = System.Reflection.Assembly.GetExecutingAssembly().Location;
+            int index = result.LastIndexOf("\\");
+
+            string basePath = "";
+
+            if (index > 0)
+            {
+                basePath = result.Substring(0, index);
+            }
+
+            if (basePath == null || basePath == string.Empty)
+            {
+                return false;
+            }
+
             await ModuleLoader.LoadModules(new ModuleConfigure[] {
                  new ModuleConfigure
                 {
                     ModuleName="firebase",
-                    ModulePath=$"{Directory.GetCurrentDirectory().Replace('\\','/')}/Firebase/firebase_proxy_module"
+                    ModulePath=$"{basePath.Replace('\\','/')}/Firebase/firebase_proxy_module"
                 },
             });
 
@@ -34,14 +57,24 @@ namespace FirebaseSharp.Firebase
             var firebaseIntializer = (Func<object, Task<object>>)mFirebaseWapper.init;
             var providerIntializer = (Func<object, Task<object>>)mFirebaseWapper.initProvider;
 
-            Configure = JsonConvert.SerializeObject(configure);
+            var firebaseConfig = new FirebaseInitConfigure
+            {
+                AppSdk = $"{basePath.Replace('\\', '/')}/node_modules/firebase/app",
+                DbSdk = $"{basePath.Replace('\\', '/')}/node_modules/firebase/database",
+                AuthSdk = $"{basePath.Replace('\\', '/')}/node_modules/firebase/auth",
+                DbConfigure = configure
+            };
+
+            Configure = JsonConvert.SerializeObject(firebaseConfig);
+
+            System.Diagnostics.Debug.WriteLine(Configure);
 
             try
             {
                 ProviderConfigure providerConfigure = new ProviderConfigure
                 {
-                    ProviderPath = $"{Directory.GetCurrentDirectory().Replace('\\', '/')}/edge/edge",
-                    AssemblyPath = $"{Directory.GetCurrentDirectory().Replace('\\', '/')}/FirebaseSharp.dll",
+                    ProviderPath = $"{basePath.Replace('\\', '/')}/edge/edge",
+                    AssemblyPath = $"{basePath.Replace('\\', '/')}/FirebaseSharp.dll",
                     TargetName = "FirebaseSharp.Firebase.Models.ObserveProxy",
                     TargetMethod = nameof(ObserveProxy.InvokeFromFirebase),
                 };
@@ -50,7 +83,6 @@ namespace FirebaseSharp.Firebase
                 if ((bool)providerInitResult)
                 {
                     var initializeResult = await firebaseIntializer(Configure);
-
                     return (bool)initializeResult;
                 }
             }

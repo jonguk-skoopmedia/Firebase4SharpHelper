@@ -24,11 +24,15 @@ module.exports.firebaseProvider.test = function () {
 
 module.exports.firebaseProvider.init = function (config, callback) {
     try {
-        module.exports.firebaseProvider.firebase = require("../node_modules/firebase/app");
-        require("../node_modules/firebase/database");
-        require("../node_modules/firebase/auth");
+        var configuration = JSON.parse(config);
+        console.log(configuration);
 
-        module.exports.firebaseProvider.firebase.initializeApp(JSON.parse(config));
+        module.exports.firebaseProvider.firebase = require(configuration.AppSdk);
+        console.log(module.exports.firebaseProvider.firebase);
+        require(configuration.DbSdk);
+        require(configuration.AuthSdk);
+
+        module.exports.firebaseProvider.firebase.initializeApp(configuration.DbConfigure);
     }
     catch (exception) {
         console.log(exception);
