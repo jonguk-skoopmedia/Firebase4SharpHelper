@@ -10,7 +10,6 @@ IF "%2%" == "Release" (
 	echo "Copy path: %1%"
 	
 	npm install firebase --save-prod > fireabase_build.log
-	npm install --save-prod socket.io-client > socketio_build.log
 	
 ) ELSE (
 
@@ -27,6 +26,5 @@ IF "%2%" == "Release" (
 	) ELSE (
 		echo "no, install packages"
 		npm install firebase --save-prod > fireabase_build.log
-		npm install --save-prod socket.io-client > socketio_build.log
 	)
 )
