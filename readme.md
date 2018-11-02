@@ -1,7 +1,7 @@
 # Firebase4SharpHelper
 
 * **Notice**
-if you don't need firebase authorization more batter [FireSharp](https://github.com/ziyasal/FireSharp/)
+if you don't need to firebase authorization more batter [FireSharp](https://github.com/ziyasal/FireSharp/)
 , if you need firebase custom authorization in c# client consider using this package
 
 * **structure**
