@@ -158,20 +158,17 @@ namespace FirebaseSharp.Firebase
         public static async Task Observe(string path, EventHandler<ObserveEventArgs> handler)
         {
             bool isNewObserveRequrest = false;
-            lock (locker)
+            if (mEventManager.ContainsKey(path))
             {
-                if (mEventManager.ContainsKey(path))
+                mEventManager[path].Add(handler);
+            }
+            else
+            {
+                if (mEventManager.TryAdd(path, new List<EventHandler<ObserveEventArgs>>()))
                 {
                     mEventManager[path].Add(handler);
-                }
-                else
-                {
-                    if (mEventManager.TryAdd(path, new List<EventHandler<ObserveEventArgs>>()))
-                    {
-                        mEventManager[path].Add(handler);
 
-                        isNewObserveRequrest = true;
-                    }
+                    isNewObserveRequrest = true;
                 }
             }
 
@@ -182,25 +179,22 @@ namespace FirebaseSharp.Firebase
             }
         }
 
-        public static async Task StopObserve(string path, EventHandler<ObserveEventArgs> handler)
+        public static async void StopObserve(string path, EventHandler<ObserveEventArgs> handler)
         {
             bool isClearObserve = false;
 
-            lock (locker)
+            if (mEventManager.ContainsKey(path))
             {
-                if (mEventManager.ContainsKey(path))
+                if (mEventManager[path].Count - 1 > 0)
                 {
-                    if (mEventManager[path].Count - 1 > 0)
-                    {
-                        mEventManager[path].Remove(handler);
-                    }
-                    else
-                    {
-                        mEventManager.TryRemove(path, out List<EventHandler<ObserveEventArgs>> value);
-                        value.Clear();
+                    mEventManager[path].Remove(handler);
+                }
+                else
+                {
+                    mEventManager.TryRemove(path, out List<EventHandler<ObserveEventArgs>> value);
+                    value.Clear();
 
-                        isClearObserve = true;
-                    }
+                    isClearObserve = true;
                 }
             }
 
@@ -211,16 +205,18 @@ namespace FirebaseSharp.Firebase
             }
         }
 
-        public static async Task DisposeAsync()
+        public static void DisposeAsync()
         {
             if (mEventManager.Keys.Count > 0)
             {
-                foreach (string key in mEventManager.Keys)
-                {
-                    List<Task> stopObserveTasks = new List<Task>();
-                    foreach (EventHandler<ObserveEventArgs> handler in mEventManager[key])
+                var keyEnumerator = mEventManager.Keys.GetEnumerator();
+
+                while (keyEnumerator.MoveNext())
+                {    
+                    EventHandler<ObserveEventArgs>[] stopObserveTasks = mEventManager[keyEnumerator.Current].ToArray();
+                    foreach (EventHandler<ObserveEventArgs> handler in stopObserveTasks)
                     {
-                        await StopObserve(key, handler);
+                        StopObserve(keyEnumerator.Current, handler);
                     }
                 }
             }
