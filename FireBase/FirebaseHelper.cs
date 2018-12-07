@@ -27,19 +27,9 @@ namespace FirebaseSharp.Firebase
         private static ConcurrentDictionary<string, List<EventHandler<ObserveEventArgs>>> mEventManager = new ConcurrentDictionary<string, List<EventHandler<ObserveEventArgs>>>();
         private static object locker = new object();
 
-        public static async Task<bool> InitFirebaseAsync(ReatimeDBConfigure configure)
+        public static async Task<bool> InitFirebaseAsync(string assemblyLocation, ReatimeDBConfigure configure)
         {
-            string result = System.Reflection.Assembly.GetExecutingAssembly().Location;
-            int index = result.LastIndexOf("\\");
-
-            string basePath = "";
-
-            if (index > 0)
-            {
-                basePath = result.Substring(0, index);
-            }
-
-            if (basePath == null || basePath == string.Empty)
+            if (assemblyLocation == null || assemblyLocation == string.Empty)
             {
                 return false;
             }
@@ -48,111 +38,84 @@ namespace FirebaseSharp.Firebase
                  new ModuleConfigure
                 {
                     ModuleName="firebase",
-                    ModulePath=$"{basePath.Replace('\\','/')}/Firebase/firebase_proxy_module"
+                    ModulePath=$"{assemblyLocation}/Firebase/firebase_proxy_module"
                 },
             });
 
-            mFirebaseWapper = ModuleProvider.ModuleLoader.GetProvider("firebase").firebaseProvider;
+            //mFirebaseWapper = ModuleProvider.ModuleLoader.GetProvider("firebase").firebaseProvider;
 
-            var firebaseIntializer = (Func<object, Task<object>>)mFirebaseWapper.init;
-            var providerIntializer = (Func<object, Task<object>>)mFirebaseWapper.initProvider;
+            //var firebaseIntializer = (Func<object, Task<object>>)mFirebaseWapper.init;
+            //var providerIntializer = (Func<object, Task<object>>)mFirebaseWapper.initProvider;
 
-            var firebaseConfig = new FirebaseInitConfigure
-            {
-                AppSdk = $"{basePath.Replace('\\', '/')}/node_modules/firebase/app",
-                DbSdk = $"{basePath.Replace('\\', '/')}/node_modules/firebase/database",
-                AuthSdk = $"{basePath.Replace('\\', '/')}/node_modules/firebase/auth",
-                DbConfigure = configure
-            };
+            //var firebaseConfig = new FirebaseInitConfigure
+            //{
+            //    AppSdk = $"{assemblyLocation}/node_modules/firebase/app",
+            //    DbSdk = $"{assemblyLocation}/node_modules/firebase/database",
+            //    AuthSdk = $"{assemblyLocation}/node_modules/firebase/auth",
+            //    DbConfigure = configure
+            //};
 
-            Configure = JsonConvert.SerializeObject(firebaseConfig);
+            //Configure = JsonConvert.SerializeObject(firebaseConfig);
 
-            System.Diagnostics.Debug.WriteLine(Configure);
+            //System.Diagnostics.Debug.WriteLine(Configure);
 
-            try
-            {
-                ProviderConfigure providerConfigure = new ProviderConfigure
-                {
-                    ProviderPath = $"{basePath.Replace('\\', '/')}/edge/edge",
-                    AssemblyPath = $"{basePath.Replace('\\', '/')}/FirebaseSharp.dll",
-                    TargetName = "FirebaseSharp.Firebase.Models.ObserveProxy",
-                    TargetMethod = nameof(ObserveProxy.InvokeFromFirebase),
-                };
 
-                var providerInitResult = await providerIntializer(providerConfigure);
-                if ((bool)providerInitResult)
-                {
-                    var initializeResult = await firebaseIntializer(Configure);
-                    return (bool)initializeResult;
-                }
-            }
-            catch (Exception e)
-            {
-                throw new InvalidOperationException("failed to firebase sdk initialize", e);
-            }
+            //ProviderConfigure providerConfigure = new ProviderConfigure
+            //{
+            //    ProviderPath = $"{assemblyLocation}/edge/edge",
+            //    AssemblyPath = $"{assemblyLocation}/FirebaseSharp.dll",
+            //    TargetName = "FirebaseSharp.Firebase.Models.ObserveProxy",
+            //    TargetMethod = nameof(ObserveProxy.InvokeFromFirebase),
+            //};
 
-            return false;
+            //var providerInitResult = await providerIntializer(providerConfigure);
+            //if ((bool)providerInitResult)
+            //{
+            //    var initializeResult = await firebaseIntializer(Configure);
+            //    return (bool)initializeResult;
+            //}
+
+            return true;
         }
 
         public static async Task<bool> InitDatabaseAsync()
         {
             var dbInitTask = (Func<object, Task<object>>)mFirebaseWapper.initDatabase;
 
-            try
-            {
-                var initializeResult = await dbInitTask("dummy");
-                ObserveProxy.InvokedFromFDBObserve += ObserveProxy_InvokedFromFDBObserve;
+            var initializeResult = await dbInitTask("dummy");
+            ObserveProxy.InvokedFromFDBObserve += ObserveProxy_InvokedFromFDBObserve;
 
-                return (bool)initializeResult;
-            }
-            catch (Exception e)
-            {
-                throw new InvalidOperationException("Failed to realtime database connect", e);
-            }
+            return (bool)initializeResult;
         }
 
         public static async Task<bool> Authorize(SecureString token)
         {
-            try
+            var authorizeTask = (Func<object, Task<object>>)mFirebaseWapper.auth;
+            var authorizeResult = await authorizeTask(token.ToStringFromSecureString());
+
+            if (authorizeResult is bool)
             {
-                var authorizeTask = (Func<object, Task<object>>)mFirebaseWapper.auth;
-                var authorizeResult = await authorizeTask(token.ToStringFromSecureString());
-
-                if (authorizeResult is bool)
-                {
-                    return (bool)authorizeResult;
-                }
-
-                dynamic error = authorizeResult;
-
-                var errorCode = error.code;
-                var errorMessage = error.message;
-
-                // TODO: logging
-
-                return false;
+                return (bool)authorizeResult;
             }
-            catch (Exception e)
-            {
-                throw new InvalidOperationException("FirebaseHelper.Authorize Occurred unhandled exception", e);
-            }
+
+            dynamic error = authorizeResult;
+
+            var errorCode = error.code;
+            var errorMessage = error.message;
+
+            // TODO: logging
+
+            return false;
         }
 
         public static async Task<FirebaseResponse> Select(string query)
         {
-            try
-            {
-                var selectTask = (Func<object, Task<object>>)mFirebaseWapper.select;
-                var selectResult = await selectTask(query);
+            var selectTask = (Func<object, Task<object>>)mFirebaseWapper.select;
+            var selectResult = await selectTask(query);
 
-                Dictionary<string, object> body = JsonConvert.DeserializeObject<Dictionary<string, object>>(selectResult.ToString());
+            Dictionary<string, object> body = JsonConvert.DeserializeObject<Dictionary<string, object>>(selectResult.ToString());
 
-                return new FirebaseResponse(true, (int)200, body, selectResult.ToString());
-            }
-            catch (Exception e)
-            {
-                throw new InvalidOperationException("occurred unhandled exception try to select", e);
-            }
+            return new FirebaseResponse(true, (int)200, body, selectResult.ToString());
         }
 
         public static async Task Observe(string path, EventHandler<ObserveEventArgs> handler)
@@ -212,7 +175,7 @@ namespace FirebaseSharp.Firebase
                 var keyEnumerator = mEventManager.Keys.GetEnumerator();
 
                 while (keyEnumerator.MoveNext())
-                {    
+                {
                     EventHandler<ObserveEventArgs>[] stopObserveTasks = mEventManager[keyEnumerator.Current].ToArray();
                     foreach (EventHandler<ObserveEventArgs> handler in stopObserveTasks)
                     {
