@@ -1,4 +1,5 @@
 ﻿using EdgeJs;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
@@ -17,7 +18,9 @@ namespace FirebaseSharp.ModuleProvider
                 log.WriteEntry("Module Loader runing", EventLogEntryType.Information, 1001, 0);
             }
 
-            var func = Edge.Func(@"return function (targetModels, callback) {
+            try
+            {
+                var func = Edge.Func(@"return function (targetModels, callback) {
                                             var modules = {};
                                             try
                                             {
@@ -32,20 +35,30 @@ namespace FirebaseSharp.ModuleProvider
                                             }
                                             catch(exception)
                                             {
-                                                console.log(exception);
+                                                callback(null, JSON.stringify(exception));
                                             }
 
                                             callback(null, modules);
                                           };");
 
-            using (EventLog log = new EventLog("Application"))
-            {
-                log.Source = "Application";
-                log.WriteEntry("Edge.func load", EventLogEntryType.Information, 1001, 0);
+                using (EventLog log = new EventLog("Application"))
+                {
+                    log.Source = "Application";
+                    log.WriteEntry("Edge.func load", EventLogEntryType.Information, 1001, 0);
+                }
+
+                mProvider = new Dictionary<string, dynamic>((dynamic)await func(moduleConfigures));
+
             }
-
-            mProvider = new Dictionary<string, dynamic>((dynamic)await func(moduleConfigures));
-
+            catch (Exception e)
+            {
+                using (EventLog log = new EventLog("Application"))
+                {
+                    log.Source = "Application";
+                    log.WriteEntry($"Edge.func occurred exception: {e.Message}\n{e.StackTrace}", EventLogEntryType.Error, 1001, 0);
+                }
+            }
+            
             using (EventLog log = new EventLog("Application"))
             {
                 log.Source = "Application";

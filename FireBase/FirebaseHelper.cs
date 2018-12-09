@@ -42,38 +42,38 @@ namespace FirebaseSharp.Firebase
                 },
             });
 
-            //mFirebaseWapper = ModuleProvider.ModuleLoader.GetProvider("firebase").firebaseProvider;
+            mFirebaseWapper = ModuleProvider.ModuleLoader.GetProvider("firebase").firebaseProvider;
 
-            //var firebaseIntializer = (Func<object, Task<object>>)mFirebaseWapper.init;
-            //var providerIntializer = (Func<object, Task<object>>)mFirebaseWapper.initProvider;
+            var firebaseIntializer = (Func<object, Task<object>>)mFirebaseWapper.init;
+            var providerIntializer = (Func<object, Task<object>>)mFirebaseWapper.initProvider;
 
-            //var firebaseConfig = new FirebaseInitConfigure
-            //{
-            //    AppSdk = $"{assemblyLocation}/node_modules/firebase/app",
-            //    DbSdk = $"{assemblyLocation}/node_modules/firebase/database",
-            //    AuthSdk = $"{assemblyLocation}/node_modules/firebase/auth",
-            //    DbConfigure = configure
-            //};
+            var firebaseConfig = new FirebaseInitConfigure
+            {
+                AppSdk = $"{assemblyLocation}/node_modules/firebase/app",
+                DbSdk = $"{assemblyLocation}/node_modules/firebase/database",
+                AuthSdk = $"{assemblyLocation}/node_modules/firebase/auth",
+                DbConfigure = configure
+            };
 
-            //Configure = JsonConvert.SerializeObject(firebaseConfig);
+            Configure = JsonConvert.SerializeObject(firebaseConfig);
 
-            //System.Diagnostics.Debug.WriteLine(Configure);
+            System.Diagnostics.Debug.WriteLine(Configure);
 
 
-            //ProviderConfigure providerConfigure = new ProviderConfigure
-            //{
-            //    ProviderPath = $"{assemblyLocation}/edge/edge",
-            //    AssemblyPath = $"{assemblyLocation}/FirebaseSharp.dll",
-            //    TargetName = "FirebaseSharp.Firebase.Models.ObserveProxy",
-            //    TargetMethod = nameof(ObserveProxy.InvokeFromFirebase),
-            //};
+            ProviderConfigure providerConfigure = new ProviderConfigure
+            {
+                ProviderPath = $"{assemblyLocation}/edge/edge",
+                AssemblyPath = $"{assemblyLocation}/FirebaseSharp.dll",
+                TargetName = "FirebaseSharp.Firebase.Models.ObserveProxy",
+                TargetMethod = nameof(ObserveProxy.InvokeFromFirebase),
+            };
 
-            //var providerInitResult = await providerIntializer(providerConfigure);
-            //if ((bool)providerInitResult)
-            //{
-            //    var initializeResult = await firebaseIntializer(Configure);
-            //    return (bool)initializeResult;
-            //}
+            var providerInitResult = await providerIntializer(providerConfigure);
+            if ((bool)providerInitResult)
+            {
+                var initializeResult = await firebaseIntializer(Configure);
+                return (bool)initializeResult;
+            }
 
             return true;
         }
