@@ -57,8 +57,9 @@ namespace FirebaseSharp.Firebase
 
             Configure = JsonConvert.SerializeObject(firebaseConfig);
 
+#if DEBUG
             System.Diagnostics.Debug.WriteLine(Configure);
-
+#endif
 
             ProviderConfigure providerConfigure = new ProviderConfigure
             {

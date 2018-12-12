@@ -26,7 +26,9 @@ namespace FirebaseSharp.Firebase.Models
             catch (Exception e)
             {
                 // TODO: logging
+#if DEBUG
                 System.Diagnostics.Debug.WriteLine(e.Message);
+#endif
             }
 
             return true;
